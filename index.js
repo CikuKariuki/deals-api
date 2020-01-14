@@ -5,11 +5,14 @@ const MongoClient = require('mongodb').MongoClient
 
 dotenv.config()
 const app = express()
+const upload = multer({dest: 'uploads/'})
 
-app.post('/deals', (req,res)=>{
+app.post('/deals',upload.single('dealsImage'), (req,res)=>{
     var request = req.body;
+    console.log(req.file)
 
     res.send(request)
+    console.log(request)
 })
 
 
