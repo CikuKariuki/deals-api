@@ -40,7 +40,7 @@ app.route('/deals').get((req,res)=>{
         var cursor = db.collection(process.env.dealscollection).find()
         cursor.each((err,item)=>{
             if(item != null) {
-                str = str+" "+ "<img src='uploads/2020-01-14T09:15:45.277ZScreenshot from 2020-01-10 17-07-56.png'></br><b>Product: </b>"+item.dealsTitle + " </br><p>Before: "+ item.before_price+ "</p>"+ "<p>After: "+item.after_price +"</p></br>"
+                str = str+"<img src='./uploads/2020-01-15T09:45:19.510ZScreenshot%20from%202020-01-10%2017-06-34.png'></br><b>Product: </b>"+item.dealsTitle + " </br><p>Before: "+ item.before_price+ "</p>"+ "<p>After: "+item.after_price +"</p></br>"
             }  
             res.send(str)         
     }) 
@@ -70,12 +70,16 @@ app.post('/deals',upload.single('dealsImage'), (req,res)=>{
     // console.log(req.file)
 
     const db = makeDB()
-    const inserted = db.collection(process.env.dealscollection).insertOne({merchantId: '1a2b3c', dealsImage: 'uploads/2020-01-14T09:15:45.277ZScreenshot from 2020-01-10 17-07-56.png', dealsTitle: "Julla Hoodie", before_price: '2,500', after_price: '2,000'})
-    // console.log(inserted)
+    const inserted = db.collection(process.env.dealscollection).deleteOne({merchantId: 'Avechi', dealsImage: 'uploads/2020-01-14T09:15:45.277ZScreenshot from 2020-01-10 17-07-56.png', dealsTitle: "Julla Hoodie", before_price: '2,500', after_price: '2,000'})
+    console.log(inserted)
   //to see what is in the database 
     var cursor = db.collection(process.env.dealscollection).find()
     cursor.each((err,doc)=>{
-        // console.log(doc);
+        if(doc === null){
+            console.log("The database is empty")
+        } else{
+        console.log(doc);
+        }
     })
     res.send(request)
     // console.log(request)
