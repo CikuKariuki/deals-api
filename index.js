@@ -31,24 +31,6 @@ const upload = multer({
 });
 //end of storage and limitations of the uploaded files
 
-var str = ''
-
-// displaying on browser
-app.route('/deals').get((req,res)=>{
-    MongoClient.connect(url, {useUnifiedTopology: true}, (err,client)=>{
-        var db = client.db(process.env.dealsdb)
-        var cursor = db.collection(process.env.dealscollection).find()
-        cursor.each((err,item)=>{
-            if(item != null) {
-                str = str+"<img src='./uploads/2020-01-15T09:45:19.510ZScreenshot%20from%202020-01-10%2017-06-34.png'></br><b>Product: </b>"+item.dealsTitle + " </br><p>Before: "+ item.before_price+ "</p>"+ "<p>After: "+item.after_price +"</p></br>"
-            }  
-            res.send(str)         
-    }) 
-    }) 
-    })
-
-
-
 
 //making the uploads folder staticly public
 app.use('/uploads', express.static('uploads'))
@@ -63,31 +45,42 @@ function makeDB(){
     }return client.db(process.env.dealsdb)
 }
 
+    
+//getting deals
+app.get('/gotdeals', async (req,res)=>{
+    let arr = []
+    const db = makeDB()
+    var cursor = db.collection(process.env.dealscollection).find()
+    const result = await cursor.toArray()
+    console.log(result)
+    res.json(result);
+      
+
+})
+//end of getting deals
+
 
 // posting deals
-app.post('/deals',upload.single('dealsImage'), (req,res)=>{
+app.post('/deals',upload.single('dealsImage'), (req,res)=>{  
     var request = req.body;
-    // console.log(req.file)
+    // console.log(req.body)
 
     const db = makeDB()
-    const inserted = db.collection(process.env.dealscollection).deleteOne({merchantId: 'Avechi', dealsImage: 'uploads/2020-01-14T09:15:45.277ZScreenshot from 2020-01-10 17-07-56.png', dealsTitle: "Julla Hoodie", before_price: '2,500', after_price: '2,000'})
-    console.log(inserted)
-  //to see what is in the database 
+    const inserted = db.collection(process.env.dealscollection)//.insertOne({merchantId: 'VC', dealsDescription: 'Scotch bar stool', before_price: '12,999', after_price: '8,999', storeUrl: 'https://victoriacourts.co.ke/shop-2/outdoor/bar-stool/scotch-bar-stool/', imageUrl: 'https://victoriacourts.co.ke/wp-content/uploads/2018/11/D01BS125-A.jpg'})
+    // console.log( "New insertion: "+ inserted)
+  //to see what is in the database  
     var cursor = db.collection(process.env.dealscollection).find()
     cursor.each((err,doc)=>{
-        if(doc === null){
-            console.log("The database is empty")
-        } else{
-        console.log(doc);
-        }
+        console.log(doc); 
+        
     })
     res.send(request)
-    // console.log(request)
+    // console.log(request) 
 })
 
 
 //starting the server
-const port = 3000
+const port = 3001
 app.listen(port, ()=>{
        console.log("listening") 
 })
